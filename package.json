@@ -1,0 +1,23 @@
+{
+  "name": "pixi-playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "prepublish": "typings install",
+    "watch": "webpack --watch",
+    "start": "webpack-dev-server --hot --inline --port 5000 --contentBase './'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "transform-loader": "^0.2.4",
+    "ts-loader": "^2.0.2",
+    "tslint": "^4.5.1",
+    "typescript": "^2.2.1",
+    "typings": "^2.1.0",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.4.2"
+  }
+}
