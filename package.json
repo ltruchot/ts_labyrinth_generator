@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "codelyzer": "^3.0.0-beta.3",
     "transform-loader": "^0.2.4",
     "ts-loader": "^2.0.2",
     "tslint": "^4.5.1",

@@ -44,38 +44,55 @@ class Grid {
     }
   }
   createNextWay () :void {
-    const directions = ['top','right','bottom','left'];
+    const directions = ['top', 'top-right', 'right', 'bottom-right', 'bottom', 'bottom-left', 'left', 'top-left'];
     let previousTile = this.matrix[this.previousWay.y][this.previousWay.x];
 
     while (directions.length) {
       let nextTile:TileCoords = { x:0, y:0 };
       let directionIdx = this.getRandomInt(0, directions.length - 1);
-      switch(directions[directionIdx]) {
-        case 'top':
-          nextTile.x = this.previousWay.x
-          nextTile.y = this.previousWay.y - 1
-          break;
-        case 'right':
-          nextTile.x = this.previousWay.x + 1
-          nextTile.y = this.previousWay.y
-          break;
-        case 'bottom':
-          nextTile.x = this.previousWay.x
-          nextTile.y = this.previousWay.y + 1
-          break;
-        case 'left':
-          nextTile.x = this.previousWay.x - 1
-          nextTile.y = this.previousWay.y
-          break;
+      const nextDirectionCoords = {
+        'top': {
+          x: this.previousWay.x,
+          y: this.previousWay.y - 1
+        },
+        'top-right': {
+          x: this.previousWay.x + 1,
+          y: this.previousWay.y - 1
+        },
+        'right': {
+          x: this.previousWay.x + 1,
+          y: this.previousWay.y
+        },
+        'bottom-right': {
+          x: this.previousWay.x + 1,
+          y: this.previousWay.y + 1
+        },
+        'bottom': {
+          x: this.previousWay.x,
+          y: this.previousWay.y + 1
+        },
+        'bottom-left': {
+          x: this.previousWay.x - 1,
+          y: this.previousWay.y + 1
+        },
+        'left': {
+          x: this.previousWay.x - 1,
+          y: this.previousWay.y
+        },
+        'top-left': {
+          x: this.previousWay.x - 1,
+          y: this.previousWay.y - 1
+        }
       }
-      let line = this.matrix[nextTile.y]
-      console.log(line[nextTile.x])
-      if ((!line) || isNaN(line[nextTile.x]) ||(line[nextTile.x] === this.tileIndexes.wall)) {
+      let direction = directions[directionIdx];
+      let nextCoords = nextDirectionCoords[direction]
+      let line = this.matrix[nextCoords.y];
+      if ((!line) || isNaN(line[nextCoords.x]) ||(line[nextCoords.x] === this.tileIndexes.wall)) {
         directions.splice(directionIdx, 1);
       } else {
-        this.matrix[nextTile.y][nextTile.x] = this.tileIndexes.wall // TODO: remove and put walls arround
-        this.previousWay.x = nextTile.x
-        this.previousWay.y = nextTile.y
+        this.matrix[nextCoords.y][nextCoords.x] = this.tileIndexes.wall // TODO: remove and put walls arround
+        this.previousWay.x = nextCoords.x
+        this.previousWay.y = nextCoords.y
         directions.length = 0;
       }
     }
