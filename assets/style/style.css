@@ -1,8 +1,6 @@
 html,
 body,
-div,
-h1,
-p {
+div {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
@@ -10,18 +8,19 @@ p {
 
 body {
   font-family: sans-serif;
-  font-size: 16px;
+  font-size: 18px;
 }
 
-h1 {
-  font-size: 1.5em;
-  color: #e0004e;
-  margin: 0 0 10px 0;
+#game-area {
+  margin: 15px;
+  border: 2px solid black;
+  display: inline-block;
 }
 
-p {
-  padding: 5px 0;
-}
-div {
-  line-height: 0.9em;
+#game-area .line .cell {
+  display: block;
+  float:left;
+  width: 20px;
+  height: 20px;
+  text-align: center;
 }

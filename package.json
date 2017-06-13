@@ -1,5 +1,7 @@
 {
-  "name": "pixi-playground",
+  "name": "labyrinth-generator",
+  "author": "Loïc TRUCHOT",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "index.html",
@@ -12,10 +14,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "codelyzer": "^3.0.0-beta.3",
-    "transform-loader": "^0.2.4",
     "ts-loader": "^2.0.2",
-    "tslint": "^4.5.1",
+    "tslint": "^5.4.3",
     "typescript": "^2.2.1",
     "typings": "^2.1.0",
     "webpack": "^2.2.1",

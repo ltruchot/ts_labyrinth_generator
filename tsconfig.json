@@ -4,7 +4,11 @@
     "module": "commonjs",
     "removeComments": true,
     "sourceMap": true,
-    "allowJs": true
+    "allowJs": true,
+    "lib": [
+      "es2016",
+      "dom"
+    ]
   },
   "exclude": [
     "node_modules"
