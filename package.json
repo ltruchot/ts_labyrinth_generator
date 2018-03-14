@@ -1,6 +1,6 @@
 {
   "name": "labyrinth-generator",
-  "author": "Loïc TRUCHOT",
+  "author": "",
   "private": true,
   "version": "1.0.0",
   "description": "",
@@ -11,7 +11,6 @@
     "start": "webpack-dev-server --hot --inline --port 5000 --contentBase './'"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "devDependencies": {
     "ts-loader": "^2.0.2",
