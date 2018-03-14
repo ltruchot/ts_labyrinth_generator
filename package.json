@@ -8,7 +8,8 @@
   "scripts": {
     "prepublish": "typings install",
     "watch": "webpack --watch",
-    "start": "webpack-dev-server --hot --inline --port 5000 --contentBase './'"
+    "start": "webpack-dev-server --hot --inline --port 5000 --contentBase './'",
+    "build": "webpack"
   },
   "keywords": [],
   "license": "ISC",

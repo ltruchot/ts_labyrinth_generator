@@ -6,9 +6,9 @@
 /******/ 	function __webpack_require__(moduleId) {
 /******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
+/******/ 		if(installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
-/******/
+/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,142 +73,255 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Grid = (function () {
-    function Grid(height, width) {
-        this.height = height;
-        this.width = width;
-        this.matrix = [];
-        this.tileIndexes = {
-            wall: 0,
-            way: 1,
-            open: 2
-        };
-        this.tileDisplays = {
-            wall: '#',
-            way: 'o',
-            open: '='
-        };
-        this.tileLinks = [
-            this.tileDisplays.wall,
-            this.tileDisplays.way,
-            this.tileDisplays.open
-        ];
-        this.realHeight = (this.height * 2) + 1;
-        this.realWidth = (this.width * 2) + 1;
-        this.createGrid();
-        this.displayGridInHTML('zone');
+var DomDrawer = (function () {
+    function DomDrawer(domId) {
+        this.mainArea = document.getElementById(domId);
     }
-    Grid.prototype.createGrid = function () {
-        var cellUid = 0;
-        for (var y = 0; y < this.realHeight; y++) {
-            this.matrix.push([]);
-            for (var x = 0; x < this.realWidth; x++) {
-                if (((y + 1) % 2 !== 0) || ((x + 1) % 2 !== 0)) {
-                    this.matrix[y].push(this.tileIndexes.wall);
-                }
-                else {
-                    this.matrix[y].push(++cellUid);
-                }
-            }
+    DomDrawer.prototype.clean = function () {
+        this.mainArea.innerHTML = '';
+    };
+    DomDrawer.prototype.prepareLine = function () {
+        var htmlLine = this.createHtmlElement('div', 'line');
+        return htmlLine;
+    };
+    DomDrawer.prototype.drawLine = function (line) {
+        this.mainArea.appendChild(line);
+    };
+    DomDrawer.prototype.drawCell = function (line, id, content) {
+        var cell = this.createHtmlElement('div', 'cell', id, content);
+        line.appendChild(cell);
+    };
+    DomDrawer.prototype.redrawCell = function (id, type, content) {
+        var cellHtmlEl = document.getElementById(id);
+        if (content) {
+            cellHtmlEl.innerText = content;
+        }
+        switch (type) {
+            case 'entrance':
+                cellHtmlEl.style.backgroundColor = 'green';
+                break;
+            case 'exit':
+                cellHtmlEl.style.backgroundColor = 'red';
+                break;
+            case 'way':
+                cellHtmlEl.style.backgroundColor = '#999999';
+                break;
+            default:
+                cellHtmlEl.style.backgroundColor = 'white';
+                break;
         }
     };
-    Grid.prototype.createLab = function () {
-        var closedCells = this.height * this.width;
-        this.getRandomInt(1, closedCells);
-        var cell = 'TODO';
-    };
-    Grid.prototype.createNextWay = function () {
-        var directions = ['top', 'right', 'bottom', 'left'];
-        var previousTile = this.matrix[this.previousWay.y][this.previousWay.x];
-        while (directions.length) {
-            var nextTile = { x: 0, y: 0 };
-            var directionIdx = this.getRandomInt(0, directions.length - 1);
-            var nextDirectionCoords = {
-                'top': {
-                    x: this.previousWay.x,
-                    y: this.previousWay.y - 1
-                },
-                'top-right': {
-                    x: this.previousWay.x + 1,
-                    y: this.previousWay.y - 1
-                },
-                'right': {
-                    x: this.previousWay.x + 1,
-                    y: this.previousWay.y
-                },
-                'bottom-right': {
-                    x: this.previousWay.x + 1,
-                    y: this.previousWay.y + 1
-                },
-                'bottom': {
-                    x: this.previousWay.x,
-                    y: this.previousWay.y + 1
-                },
-                'bottom-left': {
-                    x: this.previousWay.x - 1,
-                    y: this.previousWay.y + 1
-                },
-                'left': {
-                    x: this.previousWay.x - 1,
-                    y: this.previousWay.y
-                },
-                'top-left': {
-                    x: this.previousWay.x - 1,
-                    y: this.previousWay.y - 1
-                }
-            };
-            var direction = directions[directionIdx];
-            var nextCoords = nextDirectionCoords[direction];
-            var line = this.matrix[nextCoords.y];
-            if ((!line) || isNaN(line[nextCoords.x]) || (line[nextCoords.x] === this.tileIndexes.wall)) {
-                directions.splice(directionIdx, 1);
-            }
-            else {
-                this.matrix[nextCoords.y][nextCoords.x] = this.tileIndexes.wall;
-                this.previousWay.x = nextCoords.x;
-                this.previousWay.y = nextCoords.y;
-                directions.length = 0;
-            }
+    DomDrawer.prototype.createHtmlElement = function (element, cssClass, id, content) {
+        var el = document.createElement(element);
+        if (id) {
+            el.id = id;
         }
+        if (content) {
+            el.innerHTML = content;
+        }
+        ;
+        if (cssClass) {
+            el.className = cssClass;
+        }
+        ;
+        return el;
     };
-    Grid.prototype.createIO = function () {
-        this.entrance = {
-            y: this.getRandomInt(1, this.height - 2),
-            x: 0
-        };
-        this.exit = {
-            y: this.getRandomInt(1, this.height - 2),
-            x: this.matrix.length - 1
-        };
-        this.previousWay = this.entrance;
-        this.matrix[this.entrance.y][this.entrance.x] = this.tileIndexes.way;
-        this.matrix[this.exit.y][this.exit.x] = this.tileIndexes.way;
-    };
-    Grid.prototype.displayGridInHTML = function (elementId) {
-        var _this = this;
-        var zone = document.getElementById(elementId);
-        this.matrix.forEach(function (line) {
-            line.forEach(function (tileIdx) {
-                zone.appendChild(_this.createHtmlElement('span', _this.tileLinks[tileIdx] || tileIdx + ''));
-            });
-            zone.appendChild(_this.createLimit());
-        });
-    };
-    Grid.prototype.createHtmlElement = function (element, text) {
-        var tile = document.createElement(element);
-        tile.innerText = text;
-        return tile;
-    };
-    Grid.prototype.createLimit = function () {
+    DomDrawer.prototype.createLimit = function () {
         var nextLine = document.createElement('br');
         return nextLine;
     };
-    Grid.prototype.getRandomInt = function (min, max) {
+    return DomDrawer;
+}());
+exports.DomDrawer = DomDrawer;
+;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var LabyrinthMatrix = (function () {
+    function LabyrinthMatrix(height, width, drawer) {
+        var _this = this;
+        this.height = height;
+        this.width = width;
+        this.drawer = drawer;
+        this.cellMatrix = [];
+        this.vWallMatrix = [];
+        this.hWallMatrix = [];
+        this.availableWalls = [];
+        this.nbrOfWallMerged = 0;
+        this.nbrOfCells = 0;
+        this.nbrOfWalls = 0;
+        this.drawer.clean();
+        this.createGrids();
+        this.displayGrids();
+        setTimeout(function () {
+            _this.createLabyrinth();
+            _this.createIO();
+        }, 500);
+    }
+    LabyrinthMatrix.prototype.createGrids = function () {
+        var _this = this;
+        var wallLineIndex = 0;
+        var _loop_1 = function (y) {
+            this_1.cellMatrix.push([]);
+            this_1.vWallMatrix.push([]);
+            for (var x = 0; x < this_1.width; x++) {
+                this_1.cellMatrix[y].push({ uid: this_1.nbrOfCells, current: this_1.nbrOfCells });
+                this_1.nbrOfCells++;
+                if (x !== this_1.width - 1) {
+                    this_1.vWallMatrix[y].push({ uid: this_1.nbrOfWalls, open: false });
+                    this_1.nbrOfWalls++;
+                }
+            }
+            this_1.vWallMatrix[y].forEach(function (wall, wallIdx) {
+                wall.separate = [
+                    _this.cellMatrix[y][wallIdx],
+                    _this.cellMatrix[y][wallIdx + 1]
+                ];
+            });
+        };
+        var this_1 = this;
+        for (var y = 0; y < this.height; y++) {
+            _loop_1(y);
+        }
+        for (var y = 0; y < this.height - 1; y++) {
+            var wallLine = [];
+            for (var x = 0; x < this.width; x++) {
+                wallLine.push({ uid: this.nbrOfWalls, open: false, separate: [
+                        this.cellMatrix[y][x],
+                        this.cellMatrix[y + 1][x]
+                    ] });
+                this.nbrOfWalls++;
+            }
+            this.hWallMatrix.push(wallLine);
+        }
+    };
+    LabyrinthMatrix.prototype.checkWall = function (wall, wallUid, id) {
+        var _this = this;
+        var currentUid = wall.separate[0].current;
+        var targetUid = wall.separate[1].current;
+        if (currentUid !== targetUid) {
+            wall.open = true;
+            this.drawer.redrawCell(id, 'way', ' ');
+            this.cellMatrix.forEach(function (line, lineIdx) {
+                line.forEach(function (cell, cellIdx) {
+                    if ((cell.current === targetUid) || (cell.current === currentUid)) {
+                        cell.current = targetUid;
+                        _this.drawer.redrawCell('cell-' + lineIdx + '-' + cellIdx, 'way', ' ');
+                    }
+                });
+            });
+            this.nbrOfWallMerged++;
+        }
+    };
+    LabyrinthMatrix.prototype.createLabyrinth = function () {
+        var _this = this;
+        this.availableWalls = Array.from(Array(this.nbrOfWalls).keys());
+        var security = 0;
+        var _loop_2 = function () {
+            var wallIndex = this_2.getRandomInt(0, this_2.availableWalls.length - 1);
+            var wallUid = this_2.availableWalls[wallIndex];
+            var isVWall = false;
+            var isHWall = false;
+            this_2.vWallMatrix.forEach(function (line, lineIdx) {
+                line.forEach(function (wall, wallIdx) {
+                    if (wall.uid === wallUid) {
+                        isVWall = true;
+                        _this.checkWall(wall, wallUid, 'v-wall-' + lineIdx + '-' + wallIdx);
+                    }
+                });
+            });
+            if (!isVWall) {
+                this_2.hWallMatrix.forEach(function (line, lineIdx) {
+                    line.forEach(function (wall, wallIdx) {
+                        if (wall.uid === wallUid) {
+                            isHWall = true;
+                            _this.checkWall(wall, wallUid, 'h-wall-' + lineIdx + '-' + wallIdx);
+                        }
+                    });
+                });
+            }
+            security++;
+            this_2.availableWalls.splice(wallIndex, 1);
+        };
+        var this_2 = this;
+        while ((this.nbrOfWallMerged < this.nbrOfCells - 1) && (security < 10000)) {
+            _loop_2();
+        }
+    };
+    LabyrinthMatrix.prototype.createIO = function () {
+        this.entrance = {
+            y: 0,
+            x: 0
+        };
+        this.exit = {
+            y: this.height - 1,
+            x: this.width - 1
+        };
+        var entranceDomId = 'cell-' + this.entrance.y + '-' + this.entrance.x;
+        this.drawer.redrawCell(entranceDomId, 'entrance', ' ');
+        var exitDomId = 'cell-' + this.exit.y + '-' + this.exit.x;
+        this.drawer.redrawCell(exitDomId, 'exit', ' ');
+    };
+    LabyrinthMatrix.prototype.displayGrids = function () {
+        var _this = this;
+        this.cellMatrix.forEach(function (line, lineIdx) {
+            var dLine = _this.drawer.prepareLine();
+            line.forEach(function (way, cellIdx) {
+                _this.drawer.drawCell(dLine, 'cell-' + lineIdx + '-' + cellIdx, way.current + '');
+                if (cellIdx !== line.length - 1) {
+                    _this.drawer.drawCell(dLine, 'v-wall-' + lineIdx + '-' + cellIdx, '#');
+                }
+            });
+            _this.drawer.drawLine(dLine);
+            if (lineIdx !== _this.cellMatrix.length - 1) {
+                var wallLine = _this.drawer.prepareLine();
+                for (var i = 0; i < (line.length * 2) - 1; i++) {
+                    var wallId = void 0;
+                    if ((i + 2) % 2 === 0) {
+                        wallId = 'h-wall-' + lineIdx + '-' + (i / 2);
+                    }
+                    _this.drawer.drawCell(wallLine, wallId, '#');
+                }
+                _this.drawer.drawLine(wallLine);
+            }
+        });
+    };
+    LabyrinthMatrix.prototype.getRandomInt = function (min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     };
-    return Grid;
+    return LabyrinthMatrix;
 }());
-var grid1 = new Grid(4, 4);
+exports.LabyrinthMatrix = LabyrinthMatrix;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var LabyrinthMatrix_1 = __webpack_require__(1);
+var DomDrawer_1 = __webpack_require__(0);
+var domDrawer = new DomDrawer_1.DomDrawer('game-area');
+function regenerate() {
+    var heightInput = document.getElementById('lab-height');
+    var widthInput = document.getElementById('lab-width');
+    var height = +heightInput.value > 30 ? 30 : +heightInput.value;
+    var width = +widthInput.value > 30 ? 30 : +widthInput.value;
+    heightInput.value = height + '';
+    widthInput.value = width + '';
+    new LabyrinthMatrix_1.LabyrinthMatrix(height, width, domDrawer);
+}
+regenerate();
+var btnGenerate = document.getElementById('btn-generate');
+btnGenerate.onclick = regenerate;
 
 
 /***/ })
